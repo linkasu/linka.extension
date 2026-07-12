@@ -59,6 +59,8 @@ Each card entry uses these fields:
 | --- | --- | --- | --- |
 | `id` | string | yes | Card identifier. LINKa.look uses UUID strings for generated cards. |
 | `cardType` | integer enum | yes | `0` = `AudioCard`, `1` = `SpaceCard`, `2` = `EmptyCard`, `3` = `NewCard`. |
+| `width` | integer | no (default `1`) | Card width in grid cells. Values <1 are coerced to 1. Supported on `standard` and `quiz` pages. |
+| `height` | integer | no (default `1`) | Card height in grid cells. Values <1 are coerced to 1. Supported on `standard` and `quiz` pages. |
 | `imagePath` | string | required for valid `AudioCard` | ZIP entry name of the image. PNG, JPG, JPEG, and GIF are supported. |
 | `title` | string | required for valid `AudioCard` | Card caption and output text. |
 | `audioPath` | string | no | ZIP entry name of an audio file. MP3, WAV, and OGG are accepted. |
@@ -79,6 +81,8 @@ Each card entry uses these fields:
 - `directSet` is intended for boards that should speak immediately. It hides the text output row and forces card audio playback.
 - `quizAutoNext` controls whether a correct quiz answer advances automatically.
 - `quizReadQuestion` stores whether quiz questions should be read aloud by supported players.
+
+A card with `width` or `height` greater than `1` occupies a rectangular area starting at its row-major position. Covered positions in `cards` should be filled with `EmptyCard` entries so older app versions that ignore `width`/`height` safely degrade to a regular `1×1` grid instead of crashing. If a merged card would cross the page edge, loaders may clamp its span to the available space.
 
 ## Assets
 - Images: PNG, JPG, JPEG, and GIF are supported.
@@ -105,17 +109,18 @@ Each card entry uses these fields:
         {
           "id": "f4926d55-477f-4900-b016-3298b17b30ea",
           "cardType": 0,
+          "width": 2,
           "imagePath": "apple.png",
           "title": "Apple",
           "audioPath": "apple.mp3"
         },
         {
           "id": "1aa5db1a-48f5-47d5-bcb4-9da5d5c54723",
-          "cardType": 1
+          "cardType": 2
         },
         {
           "id": "8c299d04-cb51-4dbf-946f-ad5177535a47",
-          "cardType": 2
+          "cardType": 1
         }
       ]
     }
